@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소내손 공동구매 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-white py-20">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">소내손 공동구매 플랫폼</h1>
+                <p class="text-xl text-gray-600 mb-8">누구나 쉽게, 빠르게 공동구매를 시작할 수 있습니다.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#form-section" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300">제안서 만들기</a>
+                    <a href="/deals" class="bg-gray-100 text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-200 transition duration-300">진행중인 공동구매 보기</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form Section -->
+    <section id="form-section" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">공동구매 제안서를 자동으로 만들어보세요!</h2>
+                    <form id="proposal-form" class="space-y-6">
+                        <div>
+                            <label for="api-key" class="block text-sm font-medium text-gray-700 mb-2">OpenAI API 키</label>
+                            <input type="password" id="api-key" name="api-key" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="product" class="block text-sm font-medium text-gray-700 mb-2">제품명</label>
+                            <input type="text" id="product" name="product" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="target" class="block text-sm font-medium text-gray-700 mb-2">대상 고객</label>
+                            <textarea id="target" name="target" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                        </div>
+                        <div>
+                            <label for="goal" class="block text-sm font-medium text-gray-700 mb-2">판매 목표 수량</label>
+                            <input type="number" id="goal" name="goal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300">제안서 생성</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Output Section -->
+    <section id="output-section" class="py-20 bg-white hidden">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-gray-50 rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">제안서 미리보기</h2>
+                    <div id="resultBox" class="bg-white p-6 rounded-lg border border-gray-200 mb-4 min-h-[200px] text-sm whitespace-pre-wrap font-mono"></div>
+                    <button id="copy-button" class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition duration-300">복사하기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <p class="text-center mb-8">© 2025 소내손 공동구매 플랫폼. 모두의 성장 파트너</p>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">Notion 템플릿</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">브랜드 제안서</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">DM 자동화</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelector("form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const apiKey = document.querySelector("#api-key").value;
+            const product = document.querySelector("#product").value;
+            const target = document.querySelector("#target").value;
+            const goal = document.querySelector("#goal").value;
+
+            const prompt = `
+너는 공동구매 기획 전문가야. 아래 내용을 바탕으로 제안서를 작성해줘.
+
+제품명: ${product}
+대상 고객: ${target}
+판매 목표 수량: ${goal}
+
+[형식]
+1. 제품 소개
+2. 대상 고객 분석
+3. 기대 효과
+4. 마케팅 전략
+5. 협력 요청사항
+`;
+
+            const resultBox = document.getElementById("resultBox");
+            const outputSection = document.getElementById("output-section");
+            
+            resultBox.innerText = "⏳ 제안서를 생성 중입니다...";
+            outputSection.classList.remove("hidden");
+
+            try {
+                const res = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4",
+                        messages: [{ role: "user", content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 1000
+                    }),
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.error?.message || 'API 요청 실패');
+                }
+
+                const data = await res.json();
+                const answer = data.choices[0].message.content;
+                resultBox.innerText = answer;
+                
+                // 스크롤 이동
+                outputSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                console.error('Error:', err);
+                resultBox.innerText = "❌ 에러가 발생했습니다: " + err.message;
+            }
+        });
+
+        // 복사 버튼 기능
+        document.getElementById("copy-button").addEventListener("click", () => {
+            const text = document.getElementById("resultBox").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const button = document.getElementById("copy-button");
+                const originalText = button.textContent;
+                button.textContent = "복사 완료!";
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error("복사 실패:", err);
+                alert("텍스트 복사에 실패했습니다.");
+            });
+        });
+    </script>
+</body>
+</html> 
